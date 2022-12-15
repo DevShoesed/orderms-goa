@@ -17,6 +17,7 @@ var _ = Service("msorderms", func() {
 		HTTP(func() {
 			GET("/sayHello")
 			Param("name")
+			Response(StatusOK)
 		})
 
 		// GRPC(func ()  {})
@@ -49,5 +50,4 @@ var _ = Service("msorderms", func() {
 		})
 	})
 
-	Files("/openapi.json", "./gen/http/openapi.json")
 })

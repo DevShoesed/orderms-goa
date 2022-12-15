@@ -1,0 +1,268 @@
+swagger: "2.0"
+info:
+    title: Order Mangament Service
+    description: Microservice for manager Order
+    version: ""
+host: localhost:30001
+consumes:
+    - application/json
+    - application/xml
+    - application/gob
+produces:
+    - application/json
+    - application/xml
+    - application/gob
+paths:
+    /order:
+        post:
+            tags:
+                - msorderms
+            summary: CreateOrder msorderms
+            operationId: msorderms#CreateOrder
+            parameters:
+                - name: CreateOrderRequestBody
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/MsordermsCreateOrderRequestBody'
+                    required:
+                        - idOrdine
+                        - store
+                        - tipologiaOrdine
+            responses:
+                "201":
+                    description: Created response.
+                    schema:
+                        $ref: '#/definitions/MsordermsCreateOrderResponseBody'
+            schemes:
+                - http
+    /order/{idOrdine}:
+        get:
+            tags:
+                - msorderms
+            summary: GetStatusOrderById msorderms
+            operationId: msorderms#GetStatusOrderById
+            parameters:
+                - name: idOrdine
+                  in: path
+                  description: IdOrdine
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        $ref: '#/definitions/MsordermsGetStatusOrderByIDResponseBody'
+            schemes:
+                - http
+    /sayHello:
+        get:
+            tags:
+                - msorderms
+            summary: SayHello msorderms
+            operationId: msorderms#SayHello
+            parameters:
+                - name: name
+                  in: query
+                  description: Name
+                  required: true
+                  type: string
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        type: string
+            schemes:
+                - http
+    /swagger/swagger.json:
+        get:
+            tags:
+                - swagger
+            summary: Download gen/http/openapi.json
+            description: JSON document containing the API swagger definition
+            operationId: swagger#/swagger/swagger.json
+            responses:
+                "200":
+                    description: File downloaded
+                    schema:
+                        type: file
+            schemes:
+                - http
+definitions:
+    MsordermsCreateOrderRequestBody:
+        title: MsordermsCreateOrderRequestBody
+        type: object
+        properties:
+            cognomeCliente:
+                type: string
+                description: Cognome Cliente
+                example: Consequatur sit vero illum qui.
+            dataOrdine:
+                type: string
+                description: Data Ordine
+                example: Atque qui aut in molestiae optio esse.
+            idOrdine:
+                type: string
+                description: Id Ordine
+                example: Laboriosam fuga optio vel repellat et.
+            nomeCliente:
+                type: string
+                description: Nome Cliente
+                example: Omnis molestiae natus ex eaque animi.
+            righeOrdine:
+                type: array
+                items:
+                    $ref: '#/definitions/RigaOrdineRequestBody'
+                description: Righe Ordine
+                example:
+                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                      colore: Repellendus et consectetur placeat alias tenetur maiores.
+                      modello: Facilis est consectetur enim expedita consectetur.
+                      prezzo: 0.46302
+                      quantita: 3961194039189103112
+                      taglia: Non sunt ea.
+                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                      colore: Repellendus et consectetur placeat alias tenetur maiores.
+                      modello: Facilis est consectetur enim expedita consectetur.
+                      prezzo: 0.46302
+                      quantita: 3961194039189103112
+                      taglia: Non sunt ea.
+                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                      colore: Repellendus et consectetur placeat alias tenetur maiores.
+                      modello: Facilis est consectetur enim expedita consectetur.
+                      prezzo: 0.46302
+                      quantita: 3961194039189103112
+                      taglia: Non sunt ea.
+                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                      colore: Repellendus et consectetur placeat alias tenetur maiores.
+                      modello: Facilis est consectetur enim expedita consectetur.
+                      prezzo: 0.46302
+                      quantita: 3961194039189103112
+                      taglia: Non sunt ea.
+            store:
+                type: string
+                description: Codice Store
+                example: Sunt necessitatibus.
+            tipologiaOrdine:
+                type: string
+                description: Tipologia Ordine
+                example: negozio
+                enum:
+                    - corriere
+                    - negozio
+        example:
+            cognomeCliente: Mollitia eveniet consequatur.
+            dataOrdine: Quis iste eos quia ut ipsum similique.
+            idOrdine: Veniam veritatis corrupti laborum voluptatem culpa.
+            nomeCliente: Quia maxime sed.
+            righeOrdine:
+                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                  colore: Repellendus et consectetur placeat alias tenetur maiores.
+                  modello: Facilis est consectetur enim expedita consectetur.
+                  prezzo: 0.46302
+                  quantita: 3961194039189103112
+                  taglia: Non sunt ea.
+                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                  colore: Repellendus et consectetur placeat alias tenetur maiores.
+                  modello: Facilis est consectetur enim expedita consectetur.
+                  prezzo: 0.46302
+                  quantita: 3961194039189103112
+                  taglia: Non sunt ea.
+                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                  colore: Repellendus et consectetur placeat alias tenetur maiores.
+                  modello: Facilis est consectetur enim expedita consectetur.
+                  prezzo: 0.46302
+                  quantita: 3961194039189103112
+                  taglia: Non sunt ea.
+                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
+                  colore: Repellendus et consectetur placeat alias tenetur maiores.
+                  modello: Facilis est consectetur enim expedita consectetur.
+                  prezzo: 0.46302
+                  quantita: 3961194039189103112
+                  taglia: Non sunt ea.
+            store: Nihil quas in voluptas unde.
+            tipologiaOrdine: corriere
+        required:
+            - idOrdine
+            - store
+            - tipologiaOrdine
+    MsordermsCreateOrderResponseBody:
+        title: MsordermsCreateOrderResponseBody
+        type: object
+        properties:
+            ordineId:
+                type: string
+                description: Id Ordine
+                example: Molestiae est nostrum autem aliquid.
+            statoOrdine:
+                type: string
+                example: confermato
+                enum:
+                    - da elaborare
+                    - in elaborazione
+                    - presa in carico
+                    - confermato
+                    - annullato
+        example:
+            ordineId: Repellendus cumque optio quo modi magnam.
+            statoOrdine: in elaborazione
+    MsordermsGetStatusOrderByIDResponseBody:
+        title: MsordermsGetStatusOrderByIDResponseBody
+        type: object
+        properties:
+            ordineId:
+                type: string
+                description: Id Ordine
+                example: Sit eos quia et consequatur magnam itaque.
+            statoOrdine:
+                type: string
+                example: annullato
+                enum:
+                    - da elaborare
+                    - in elaborazione
+                    - presa in carico
+                    - confermato
+                    - annullato
+        example:
+            ordineId: Nemo eos ad esse deserunt.
+            statoOrdine: presa in carico
+    RigaOrdineRequestBody:
+        title: RigaOrdineRequestBody
+        type: object
+        properties:
+            barcode:
+                type: string
+                description: Barcode Articolo
+                example: Vel facilis neque.
+            colore:
+                type: string
+                description: Codice Colore
+                example: Cumque laborum ratione suscipit et officiis quis.
+            modello:
+                type: string
+                description: Codice Articolo
+                example: Eos illum.
+            prezzo:
+                type: number
+                description: Prezzo
+                example: 0.4188796
+                format: float
+            quantita:
+                type: integer
+                description: Numero pezzi
+                example: 5634526209696178825
+                format: int64
+            taglia:
+                type: string
+                description: Codice Taglia
+                example: Quae temporibus quidem quia.
+        example:
+            barcode: Debitis non unde qui vitae.
+            colore: Corrupti iure velit qui vitae.
+            modello: Temporibus voluptatem accusamus adipisci labore laudantium.
+            prezzo: 0.24099192
+            quantita: 7343095073356108579
+            taglia: Aspernatur est quia et magnam qui laboriosam.
+        required:
+            - barcode
+            - quantita
