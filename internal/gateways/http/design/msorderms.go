@@ -30,7 +30,7 @@ var _ = Service("msorderms", func() {
 		HTTP(func() {
 			POST("/order")
 			Response(StatusCreated)
-			Response("no_criteria", StatusBadRequest)
+			// Response("no_criteria", StatusBadRequest)
 		})
 	})
 
@@ -45,7 +45,7 @@ var _ = Service("msorderms", func() {
 		HTTP(func() {
 			GET("/order/{idOrdine}")
 			Response(StatusOK)
-			Response("no_match", StatusNotFound)
+			// Response("no_match", StatusNotFound)
 		})
 	})
 
