@@ -12,17 +12,17 @@ import (
 	"fmt"
 )
 
-// SayHelloMsordermsPath returns the URL path to the msorderms service SayHello HTTP endpoint.
+// SayHelloMsordermsPath returns the URL path to the msorderms service sayHello HTTP endpoint.
 func SayHelloMsordermsPath() string {
-	return "/sayHello"
+	return "/api/v4/msorderms/sayHello"
 }
 
-// CreateOrderMsordermsPath returns the URL path to the msorderms service CreateOrder HTTP endpoint.
-func CreateOrderMsordermsPath() string {
-	return "/order"
-}
-
-// GetStatusOrderByIDMsordermsPath returns the URL path to the msorderms service GetStatusOrderById HTTP endpoint.
+// GetStatusOrderByIDMsordermsPath returns the URL path to the msorderms service getStatusOrderById HTTP endpoint.
 func GetStatusOrderByIDMsordermsPath(idOrdine string) string {
-	return fmt.Sprintf("/order/%v", idOrdine)
+	return fmt.Sprintf("/api/v4/msorderms/order/%v", idOrdine)
+}
+
+// CreateOrderMsordermsPath returns the URL path to the msorderms service createOrder HTTP endpoint.
+func CreateOrderMsordermsPath() string {
+	return "/api/v4/msorderms/order"
 }

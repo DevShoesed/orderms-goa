@@ -10,16 +10,18 @@ package server
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	msorderms "orderms/internal/gateways/http/gen/msorderms"
+	msordermsviews "orderms/internal/gateways/http/gen/msorderms/views"
 
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
 
 // EncodeSayHelloResponse returns an encoder for responses returned by the
-// msorderms SayHello endpoint.
+// msorderms sayHello endpoint.
 func EncodeSayHelloResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
 		res, _ := v.(string)
@@ -31,7 +33,7 @@ func EncodeSayHelloResponse(encoder func(context.Context, http.ResponseWriter) g
 }
 
 // DecodeSayHelloRequest returns a decoder for requests sent to the msorderms
-// SayHello endpoint.
+// sayHello endpoint.
 func DecodeSayHelloRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
 	return func(r *http.Request) (interface{}, error) {
 		var (
@@ -51,20 +53,77 @@ func DecodeSayHelloRequest(mux goahttp.Muxer, decoder func(*http.Request) goahtt
 	}
 }
 
+// EncodeGetStatusOrderByIDResponse returns an encoder for responses returned
+// by the msorderms getStatusOrderById endpoint.
+func EncodeGetStatusOrderByIDResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
+		res := v.(*msordermsviews.StatoOrdine)
+		enc := encoder(ctx, w)
+		body := NewGetStatusOrderByIDResponseBody(res.Projected)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeGetStatusOrderByIDRequest returns a decoder for requests sent to the
+// msorderms getStatusOrderById endpoint.
+func DecodeGetStatusOrderByIDRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			idOrdine string
+
+			params = mux.Vars(r)
+		)
+		idOrdine = params["idOrdine"]
+		payload := NewGetStatusOrderByIDPayload(idOrdine)
+
+		return payload, nil
+	}
+}
+
+// EncodeGetStatusOrderByIDError returns an encoder for errors returned by the
+// getStatusOrderById msorderms endpoint.
+func EncodeGetStatusOrderByIDError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+	encodeError := goahttp.ErrorEncoder(encoder, formatter)
+	return func(ctx context.Context, w http.ResponseWriter, v error) error {
+		var en goa.GoaErrorNamer
+		if !errors.As(v, &en) {
+			return encodeError(ctx, w, v)
+		}
+		switch en.GoaErrorName() {
+		case "no_match":
+			var res *goa.ServiceError
+			errors.As(v, &res)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(ctx, res)
+			} else {
+				body = NewGetStatusOrderByIDNoMatchResponseBody(res)
+			}
+			w.Header().Set("goa-error", res.GoaErrorName())
+			w.WriteHeader(http.StatusNotFound)
+			return enc.Encode(body)
+		default:
+			return encodeError(ctx, w, v)
+		}
+	}
+}
+
 // EncodeCreateOrderResponse returns an encoder for responses returned by the
-// msorderms CreateOrder endpoint.
+// msorderms createOrder endpoint.
 func EncodeCreateOrderResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res, _ := v.(*msorderms.StatoOrdine)
+		res := v.(*msordermsviews.StatoOrdine)
 		enc := encoder(ctx, w)
-		body := NewCreateOrderResponseBody(res)
+		body := NewCreateOrderResponseBody(res.Projected)
 		w.WriteHeader(http.StatusCreated)
 		return enc.Encode(body)
 	}
 }
 
 // DecodeCreateOrderRequest returns a decoder for requests sent to the
-// msorderms CreateOrder endpoint.
+// msorderms createOrder endpoint.
 func DecodeCreateOrderRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
 	return func(r *http.Request) (interface{}, error) {
 		var (
@@ -88,31 +147,27 @@ func DecodeCreateOrderRequest(mux goahttp.Muxer, decoder func(*http.Request) goa
 	}
 }
 
-// EncodeGetStatusOrderByIDResponse returns an encoder for responses returned
-// by the msorderms GetStatusOrderById endpoint.
-func EncodeGetStatusOrderByIDResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
-	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res, _ := v.(*msorderms.StatoOrdine)
-		enc := encoder(ctx, w)
-		body := NewGetStatusOrderByIDResponseBody(res)
-		w.WriteHeader(http.StatusOK)
-		return enc.Encode(body)
-	}
-}
-
-// DecodeGetStatusOrderByIDRequest returns a decoder for requests sent to the
-// msorderms GetStatusOrderById endpoint.
-func DecodeGetStatusOrderByIDRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
-	return func(r *http.Request) (interface{}, error) {
-		var (
-			idOrdine string
-
-			params = mux.Vars(r)
-		)
-		idOrdine = params["idOrdine"]
-		payload := NewGetStatusOrderByIDPayload(idOrdine)
-
-		return payload, nil
+// EncodeCreateOrderError returns an encoder for errors returned by the
+// createOrder msorderms endpoint.
+func EncodeCreateOrderError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(ctx context.Context, err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+	encodeError := goahttp.ErrorEncoder(encoder, formatter)
+	return func(ctx context.Context, w http.ResponseWriter, v error) error {
+		var en goa.GoaErrorNamer
+		if !errors.As(v, &en) {
+			return encodeError(ctx, w, v)
+		}
+		switch en.GoaErrorName() {
+		case "no_criteria":
+			var res msorderms.NoCriteria
+			errors.As(v, &res)
+			enc := encoder(ctx, w)
+			body := res
+			w.Header().Set("goa-error", res.GoaErrorName())
+			w.WriteHeader(http.StatusBadRequest)
+			return enc.Encode(body)
+		default:
+			return encodeError(ctx, w, v)
+		}
 	}
 }
 

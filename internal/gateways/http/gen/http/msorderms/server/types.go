@@ -10,11 +10,12 @@ package server
 
 import (
 	msorderms "orderms/internal/gateways/http/gen/msorderms"
+	msordermsviews "orderms/internal/gateways/http/gen/msorderms/views"
 
 	goa "goa.design/goa/v3/pkg"
 )
 
-// CreateOrderRequestBody is the type of the "msorderms" service "CreateOrder"
+// CreateOrderRequestBody is the type of the "msorderms" service "createOrder"
 // endpoint HTTP request body.
 type CreateOrderRequestBody struct {
 	// Id Ordine
@@ -33,7 +34,15 @@ type CreateOrderRequestBody struct {
 	RigheOrdine []*RigaOrdineRequestBody `form:"righeOrdine,omitempty" json:"righeOrdine,omitempty" xml:"righeOrdine,omitempty"`
 }
 
-// CreateOrderResponseBody is the type of the "msorderms" service "CreateOrder"
+// GetStatusOrderByIDResponseBody is the type of the "msorderms" service
+// "getStatusOrderById" endpoint HTTP response body.
+type GetStatusOrderByIDResponseBody struct {
+	// Id Ordine
+	OrdineID    *string `form:"ordineId,omitempty" json:"ordineId,omitempty" xml:"ordineId,omitempty"`
+	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
+}
+
+// CreateOrderResponseBody is the type of the "msorderms" service "createOrder"
 // endpoint HTTP response body.
 type CreateOrderResponseBody struct {
 	// Id Ordine
@@ -41,12 +50,22 @@ type CreateOrderResponseBody struct {
 	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
 }
 
-// GetStatusOrderByIDResponseBody is the type of the "msorderms" service
-// "GetStatusOrderById" endpoint HTTP response body.
-type GetStatusOrderByIDResponseBody struct {
-	// Id Ordine
-	OrdineID    *string `form:"ordineId,omitempty" json:"ordineId,omitempty" xml:"ordineId,omitempty"`
-	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
+// GetStatusOrderByIDNoMatchResponseBody is the type of the "msorderms" service
+// "getStatusOrderById" endpoint HTTP response body for the "no_match" error.
+type GetStatusOrderByIDNoMatchResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
 // RigaOrdineRequestBody is used to define fields on request body types.
@@ -65,19 +84,9 @@ type RigaOrdineRequestBody struct {
 	Prezzo *float32 `form:"prezzo,omitempty" json:"prezzo,omitempty" xml:"prezzo,omitempty"`
 }
 
-// NewCreateOrderResponseBody builds the HTTP response body from the result of
-// the "CreateOrder" endpoint of the "msorderms" service.
-func NewCreateOrderResponseBody(res *msorderms.StatoOrdine) *CreateOrderResponseBody {
-	body := &CreateOrderResponseBody{
-		OrdineID:    res.OrdineID,
-		StatoOrdine: res.StatoOrdine,
-	}
-	return body
-}
-
 // NewGetStatusOrderByIDResponseBody builds the HTTP response body from the
-// result of the "GetStatusOrderById" endpoint of the "msorderms" service.
-func NewGetStatusOrderByIDResponseBody(res *msorderms.StatoOrdine) *GetStatusOrderByIDResponseBody {
+// result of the "getStatusOrderById" endpoint of the "msorderms" service.
+func NewGetStatusOrderByIDResponseBody(res *msordermsviews.StatoOrdineView) *GetStatusOrderByIDResponseBody {
 	body := &GetStatusOrderByIDResponseBody{
 		OrdineID:    res.OrdineID,
 		StatoOrdine: res.StatoOrdine,
@@ -85,7 +94,31 @@ func NewGetStatusOrderByIDResponseBody(res *msorderms.StatoOrdine) *GetStatusOrd
 	return body
 }
 
-// NewSayHelloPayload builds a msorderms service SayHello endpoint payload.
+// NewCreateOrderResponseBody builds the HTTP response body from the result of
+// the "createOrder" endpoint of the "msorderms" service.
+func NewCreateOrderResponseBody(res *msordermsviews.StatoOrdineView) *CreateOrderResponseBody {
+	body := &CreateOrderResponseBody{
+		OrdineID:    res.OrdineID,
+		StatoOrdine: res.StatoOrdine,
+	}
+	return body
+}
+
+// NewGetStatusOrderByIDNoMatchResponseBody builds the HTTP response body from
+// the result of the "getStatusOrderById" endpoint of the "msorderms" service.
+func NewGetStatusOrderByIDNoMatchResponseBody(res *goa.ServiceError) *GetStatusOrderByIDNoMatchResponseBody {
+	body := &GetStatusOrderByIDNoMatchResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
+	}
+	return body
+}
+
+// NewSayHelloPayload builds a msorderms service sayHello endpoint payload.
 func NewSayHelloPayload(name string) *msorderms.SayHelloPayload {
 	v := &msorderms.SayHelloPayload{}
 	v.Name = name
@@ -93,7 +126,16 @@ func NewSayHelloPayload(name string) *msorderms.SayHelloPayload {
 	return v
 }
 
-// NewCreateOrderOrdineRequest builds a msorderms service CreateOrder endpoint
+// NewGetStatusOrderByIDPayload builds a msorderms service getStatusOrderById
+// endpoint payload.
+func NewGetStatusOrderByIDPayload(idOrdine string) *msorderms.GetStatusOrderByIDPayload {
+	v := &msorderms.GetStatusOrderByIDPayload{}
+	v.IDOrdine = idOrdine
+
+	return v
+}
+
+// NewCreateOrderOrdineRequest builds a msorderms service createOrder endpoint
 // payload.
 func NewCreateOrderOrdineRequest(body *CreateOrderRequestBody) *msorderms.OrdineRequest {
 	v := &msorderms.OrdineRequest{
@@ -110,15 +152,6 @@ func NewCreateOrderOrdineRequest(body *CreateOrderRequestBody) *msorderms.Ordine
 			v.RigheOrdine[i] = unmarshalRigaOrdineRequestBodyToMsordermsRigaOrdine(val)
 		}
 	}
-
-	return v
-}
-
-// NewGetStatusOrderByIDPayload builds a msorderms service GetStatusOrderById
-// endpoint payload.
-func NewGetStatusOrderByIDPayload(idOrdine string) *msorderms.GetStatusOrderByIDPayload {
-	v := &msorderms.GetStatusOrderByIDPayload{}
-	v.IDOrdine = idOrdine
 
 	return v
 }

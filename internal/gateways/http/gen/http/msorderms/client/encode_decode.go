@@ -15,17 +15,18 @@ import (
 	"net/http"
 	"net/url"
 	msorderms "orderms/internal/gateways/http/gen/msorderms"
+	msordermsviews "orderms/internal/gateways/http/gen/msorderms/views"
 
 	goahttp "goa.design/goa/v3/http"
 )
 
 // BuildSayHelloRequest instantiates a HTTP request object with method and path
-// set to call the "msorderms" service "SayHello" endpoint
+// set to call the "msorderms" service "sayHello" endpoint
 func (c *Client) BuildSayHelloRequest(ctx context.Context, v interface{}) (*http.Request, error) {
 	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: SayHelloMsordermsPath()}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("msorderms", "SayHello", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("msorderms", "sayHello", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -35,12 +36,12 @@ func (c *Client) BuildSayHelloRequest(ctx context.Context, v interface{}) (*http
 }
 
 // EncodeSayHelloRequest returns an encoder for requests sent to the msorderms
-// SayHello server.
+// sayHello server.
 func EncodeSayHelloRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
 	return func(req *http.Request, v interface{}) error {
 		p, ok := v.(*msorderms.SayHelloPayload)
 		if !ok {
-			return goahttp.ErrInvalidType("msorderms", "SayHello", "*msorderms.SayHelloPayload", v)
+			return goahttp.ErrInvalidType("msorderms", "sayHello", "*msorderms.SayHelloPayload", v)
 		}
 		values := req.URL.Query()
 		values.Add("name", p.Name)
@@ -50,7 +51,7 @@ func EncodeSayHelloRequest(encoder func(*http.Request) goahttp.Encoder) func(*ht
 }
 
 // DecodeSayHelloResponse returns a decoder for responses returned by the
-// msorderms SayHello endpoint. restoreBody controls whether the response body
+// msorderms sayHello endpoint. restoreBody controls whether the response body
 // should be restored after having been read.
 func DecodeSayHelloResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
 	return func(resp *http.Response) (interface{}, error) {
@@ -74,89 +75,18 @@ func DecodeSayHelloResponse(decoder func(*http.Response) goahttp.Decoder, restor
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("msorderms", "SayHello", err)
+				return nil, goahttp.ErrDecodingError("msorderms", "sayHello", err)
 			}
 			return body, nil
 		default:
 			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("msorderms", "SayHello", resp.StatusCode, string(body))
-		}
-	}
-}
-
-// BuildCreateOrderRequest instantiates a HTTP request object with method and
-// path set to call the "msorderms" service "CreateOrder" endpoint
-func (c *Client) BuildCreateOrderRequest(ctx context.Context, v interface{}) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: CreateOrderMsordermsPath()}
-	req, err := http.NewRequest("POST", u.String(), nil)
-	if err != nil {
-		return nil, goahttp.ErrInvalidURL("msorderms", "CreateOrder", u.String(), err)
-	}
-	if ctx != nil {
-		req = req.WithContext(ctx)
-	}
-
-	return req, nil
-}
-
-// EncodeCreateOrderRequest returns an encoder for requests sent to the
-// msorderms CreateOrder server.
-func EncodeCreateOrderRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
-	return func(req *http.Request, v interface{}) error {
-		p, ok := v.(*msorderms.OrdineRequest)
-		if !ok {
-			return goahttp.ErrInvalidType("msorderms", "CreateOrder", "*msorderms.OrdineRequest", v)
-		}
-		body := NewCreateOrderRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("msorderms", "CreateOrder", err)
-		}
-		return nil
-	}
-}
-
-// DecodeCreateOrderResponse returns a decoder for responses returned by the
-// msorderms CreateOrder endpoint. restoreBody controls whether the response
-// body should be restored after having been read.
-func DecodeCreateOrderResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
-	return func(resp *http.Response) (interface{}, error) {
-		if restoreBody {
-			b, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return nil, err
-			}
-			resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			defer func() {
-				resp.Body = io.NopCloser(bytes.NewBuffer(b))
-			}()
-		} else {
-			defer resp.Body.Close()
-		}
-		switch resp.StatusCode {
-		case http.StatusCreated:
-			var (
-				body CreateOrderResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("msorderms", "CreateOrder", err)
-			}
-			err = ValidateCreateOrderResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("msorderms", "CreateOrder", err)
-			}
-			res := NewCreateOrderStatoOrdineCreated(&body)
-			return res, nil
-		default:
-			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("msorderms", "CreateOrder", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("msorderms", "sayHello", resp.StatusCode, string(body))
 		}
 	}
 }
 
 // BuildGetStatusOrderByIDRequest instantiates a HTTP request object with
-// method and path set to call the "msorderms" service "GetStatusOrderById"
+// method and path set to call the "msorderms" service "getStatusOrderById"
 // endpoint
 func (c *Client) BuildGetStatusOrderByIDRequest(ctx context.Context, v interface{}) (*http.Request, error) {
 	var (
@@ -165,14 +95,14 @@ func (c *Client) BuildGetStatusOrderByIDRequest(ctx context.Context, v interface
 	{
 		p, ok := v.(*msorderms.GetStatusOrderByIDPayload)
 		if !ok {
-			return nil, goahttp.ErrInvalidType("msorderms", "GetStatusOrderById", "*msorderms.GetStatusOrderByIDPayload", v)
+			return nil, goahttp.ErrInvalidType("msorderms", "getStatusOrderById", "*msorderms.GetStatusOrderByIDPayload", v)
 		}
 		idOrdine = p.IDOrdine
 	}
 	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetStatusOrderByIDMsordermsPath(idOrdine)}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("msorderms", "GetStatusOrderById", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("msorderms", "getStatusOrderById", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -182,8 +112,11 @@ func (c *Client) BuildGetStatusOrderByIDRequest(ctx context.Context, v interface
 }
 
 // DecodeGetStatusOrderByIDResponse returns a decoder for responses returned by
-// the msorderms GetStatusOrderById endpoint. restoreBody controls whether the
+// the msorderms getStatusOrderById endpoint. restoreBody controls whether the
 // response body should be restored after having been read.
+// DecodeGetStatusOrderByIDResponse may return the following errors:
+//	- "no_match" (type *goa.ServiceError): http.StatusNotFound
+//	- error: internal error
 func DecodeGetStatusOrderByIDResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
 	return func(resp *http.Response) (interface{}, error) {
 		if restoreBody {
@@ -206,17 +139,119 @@ func DecodeGetStatusOrderByIDResponse(decoder func(*http.Response) goahttp.Decod
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("msorderms", "GetStatusOrderById", err)
+				return nil, goahttp.ErrDecodingError("msorderms", "getStatusOrderById", err)
 			}
-			err = ValidateGetStatusOrderByIDResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("msorderms", "GetStatusOrderById", err)
+			p := NewGetStatusOrderByIDStatoOrdineOK(&body)
+			view := "default"
+			vres := &msordermsviews.StatoOrdine{Projected: p, View: view}
+			if err = msordermsviews.ValidateStatoOrdine(vres); err != nil {
+				return nil, goahttp.ErrValidationError("msorderms", "getStatusOrderById", err)
 			}
-			res := NewGetStatusOrderByIDStatoOrdineOK(&body)
+			res := msorderms.NewStatoOrdine(vres)
 			return res, nil
+		case http.StatusNotFound:
+			var (
+				body GetStatusOrderByIDNoMatchResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("msorderms", "getStatusOrderById", err)
+			}
+			err = ValidateGetStatusOrderByIDNoMatchResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("msorderms", "getStatusOrderById", err)
+			}
+			return nil, NewGetStatusOrderByIDNoMatch(&body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("msorderms", "GetStatusOrderById", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("msorderms", "getStatusOrderById", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// BuildCreateOrderRequest instantiates a HTTP request object with method and
+// path set to call the "msorderms" service "createOrder" endpoint
+func (c *Client) BuildCreateOrderRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: CreateOrderMsordermsPath()}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("msorderms", "createOrder", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeCreateOrderRequest returns an encoder for requests sent to the
+// msorderms createOrder server.
+func EncodeCreateOrderRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+	return func(req *http.Request, v interface{}) error {
+		p, ok := v.(*msorderms.OrdineRequest)
+		if !ok {
+			return goahttp.ErrInvalidType("msorderms", "createOrder", "*msorderms.OrdineRequest", v)
+		}
+		body := NewCreateOrderRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("msorderms", "createOrder", err)
+		}
+		return nil
+	}
+}
+
+// DecodeCreateOrderResponse returns a decoder for responses returned by the
+// msorderms createOrder endpoint. restoreBody controls whether the response
+// body should be restored after having been read.
+// DecodeCreateOrderResponse may return the following errors:
+//	- "no_criteria" (type msorderms.NoCriteria): http.StatusBadRequest
+//	- error: internal error
+func DecodeCreateOrderResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusCreated:
+			var (
+				body CreateOrderResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("msorderms", "createOrder", err)
+			}
+			p := NewCreateOrderStatoOrdineCreated(&body)
+			view := "default"
+			vres := &msordermsviews.StatoOrdine{Projected: p, View: view}
+			if err = msordermsviews.ValidateStatoOrdine(vres); err != nil {
+				return nil, goahttp.ErrValidationError("msorderms", "createOrder", err)
+			}
+			res := msorderms.NewStatoOrdine(vres)
+			return res, nil
+		case http.StatusBadRequest:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("msorderms", "createOrder", err)
+			}
+			return nil, NewCreateOrderNoCriteria(body)
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("msorderms", "createOrder", resp.StatusCode, string(body))
 		}
 	}
 }

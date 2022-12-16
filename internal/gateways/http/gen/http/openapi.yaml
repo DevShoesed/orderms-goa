@@ -13,12 +13,12 @@ produces:
     - application/xml
     - application/gob
 paths:
-    /order:
+    /api/v4/msorderms/order:
         post:
             tags:
                 - msorderms
-            summary: CreateOrder msorderms
-            operationId: msorderms#CreateOrder
+            summary: createOrder msorderms
+            operationId: msorderms#createOrder
             parameters:
                 - name: CreateOrderRequestBody
                   in: body
@@ -34,14 +34,18 @@ paths:
                     description: Created response.
                     schema:
                         $ref: '#/definitions/MsordermsCreateOrderResponseBody'
+                "400":
+                    description: Bad Request response.
+                    schema:
+                        type: string
             schemes:
                 - http
-    /order/{idOrdine}:
+    /api/v4/msorderms/order/{idOrdine}:
         get:
             tags:
                 - msorderms
-            summary: GetStatusOrderById msorderms
-            operationId: msorderms#GetStatusOrderById
+            summary: getStatusOrderById msorderms
+            operationId: msorderms#getStatusOrderById
             parameters:
                 - name: idOrdine
                   in: path
@@ -53,14 +57,18 @@ paths:
                     description: OK response.
                     schema:
                         $ref: '#/definitions/MsordermsGetStatusOrderByIDResponseBody'
+                "404":
+                    description: Not Found response.
+                    schema:
+                        $ref: '#/definitions/MsordermsGetStatusOrderByIDNoMatchResponseBody'
             schemes:
                 - http
-    /sayHello:
+    /api/v4/msorderms/sayHello:
         get:
             tags:
                 - msorderms
-            summary: SayHello msorderms
-            operationId: msorderms#SayHello
+            summary: sayHello msorderms
+            operationId: msorderms#sayHello
             parameters:
                 - name: name
                   in: query
@@ -96,104 +104,156 @@ definitions:
             cognomeCliente:
                 type: string
                 description: Cognome Cliente
-                example: Consequatur sit vero illum qui.
+                example: Ratione suscipit et officiis quis minus quae.
             dataOrdine:
                 type: string
                 description: Data Ordine
-                example: Atque qui aut in molestiae optio esse.
+                example: Vel facilis neque.
             idOrdine:
                 type: string
                 description: Id Ordine
-                example: Laboriosam fuga optio vel repellat et.
+                example: Molestiae natus ex eaque animi.
             nomeCliente:
                 type: string
                 description: Nome Cliente
-                example: Omnis molestiae natus ex eaque animi.
+                example: Illum magni cumque.
             righeOrdine:
                 type: array
                 items:
                     $ref: '#/definitions/RigaOrdineRequestBody'
                 description: Righe Ordine
                 example:
-                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                      colore: Repellendus et consectetur placeat alias tenetur maiores.
-                      modello: Facilis est consectetur enim expedita consectetur.
-                      prezzo: 0.46302
-                      quantita: 3961194039189103112
-                      taglia: Non sunt ea.
-                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                      colore: Repellendus et consectetur placeat alias tenetur maiores.
-                      modello: Facilis est consectetur enim expedita consectetur.
-                      prezzo: 0.46302
-                      quantita: 3961194039189103112
-                      taglia: Non sunt ea.
-                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                      colore: Repellendus et consectetur placeat alias tenetur maiores.
-                      modello: Facilis est consectetur enim expedita consectetur.
-                      prezzo: 0.46302
-                      quantita: 3961194039189103112
-                      taglia: Non sunt ea.
-                    - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                      colore: Repellendus et consectetur placeat alias tenetur maiores.
-                      modello: Facilis est consectetur enim expedita consectetur.
-                      prezzo: 0.46302
-                      quantita: 3961194039189103112
-                      taglia: Non sunt ea.
+                    - barcode: Et consectetur.
+                      colore: Voluptatem non sunt ea.
+                      modello: Alias tenetur.
+                      prezzo: 0.78429174
+                      quantita: 7708216444412231043
+                      taglia: Nobis minima sit a qui.
+                    - barcode: Et consectetur.
+                      colore: Voluptatem non sunt ea.
+                      modello: Alias tenetur.
+                      prezzo: 0.78429174
+                      quantita: 7708216444412231043
+                      taglia: Nobis minima sit a qui.
             store:
                 type: string
                 description: Codice Store
-                example: Sunt necessitatibus.
+                example: Consequatur sit vero illum qui.
             tipologiaOrdine:
                 type: string
                 description: Tipologia Ordine
-                example: negozio
+                example: corriere
                 enum:
                     - corriere
                     - negozio
         example:
-            cognomeCliente: Mollitia eveniet consequatur.
-            dataOrdine: Quis iste eos quia ut ipsum similique.
-            idOrdine: Veniam veritatis corrupti laborum voluptatem culpa.
-            nomeCliente: Quia maxime sed.
+            cognomeCliente: Omnis nemo eos ad esse.
+            dataOrdine: Mollitia eveniet consequatur.
+            idOrdine: Eos quia ut ipsum similique.
+            nomeCliente: Sit eos quia et consequatur magnam itaque.
             righeOrdine:
-                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                  colore: Repellendus et consectetur placeat alias tenetur maiores.
-                  modello: Facilis est consectetur enim expedita consectetur.
-                  prezzo: 0.46302
-                  quantita: 3961194039189103112
-                  taglia: Non sunt ea.
-                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                  colore: Repellendus et consectetur placeat alias tenetur maiores.
-                  modello: Facilis est consectetur enim expedita consectetur.
-                  prezzo: 0.46302
-                  quantita: 3961194039189103112
-                  taglia: Non sunt ea.
-                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                  colore: Repellendus et consectetur placeat alias tenetur maiores.
-                  modello: Facilis est consectetur enim expedita consectetur.
-                  prezzo: 0.46302
-                  quantita: 3961194039189103112
-                  taglia: Non sunt ea.
-                - barcode: Sapiente aut ipsam adipisci voluptatum modi.
-                  colore: Repellendus et consectetur placeat alias tenetur maiores.
-                  modello: Facilis est consectetur enim expedita consectetur.
-                  prezzo: 0.46302
-                  quantita: 3961194039189103112
-                  taglia: Non sunt ea.
-            store: Nihil quas in voluptas unde.
-            tipologiaOrdine: corriere
+                - barcode: Et consectetur.
+                  colore: Voluptatem non sunt ea.
+                  modello: Alias tenetur.
+                  prezzo: 0.78429174
+                  quantita: 7708216444412231043
+                  taglia: Nobis minima sit a qui.
+                - barcode: Et consectetur.
+                  colore: Voluptatem non sunt ea.
+                  modello: Alias tenetur.
+                  prezzo: 0.78429174
+                  quantita: 7708216444412231043
+                  taglia: Nobis minima sit a qui.
+                - barcode: Et consectetur.
+                  colore: Voluptatem non sunt ea.
+                  modello: Alias tenetur.
+                  prezzo: 0.78429174
+                  quantita: 7708216444412231043
+                  taglia: Nobis minima sit a qui.
+                - barcode: Et consectetur.
+                  colore: Voluptatem non sunt ea.
+                  modello: Alias tenetur.
+                  prezzo: 0.78429174
+                  quantita: 7708216444412231043
+                  taglia: Nobis minima sit a qui.
+            store: Fugit quia maxime sed.
+            tipologiaOrdine: negozio
         required:
             - idOrdine
             - store
             - tipologiaOrdine
     MsordermsCreateOrderResponseBody:
-        title: MsordermsCreateOrderResponseBody
+        title: 'Mediatype identifier: statoordine; view=default'
         type: object
         properties:
             ordineId:
                 type: string
                 description: Id Ordine
-                example: Molestiae est nostrum autem aliquid.
+                example: Molestias sunt necessitatibus odit atque.
+            statoOrdine:
+                type: string
+                example: in elaborazione
+                enum:
+                    - da elaborare
+                    - in elaborazione
+                    - presa in carico
+                    - confermato
+                    - annullato
+        description: CreateOrderResponseBody result type (default view)
+        example:
+            ordineId: In molestiae optio esse mollitia.
+            statoOrdine: confermato
+    MsordermsGetStatusOrderByIDNoMatchResponseBody:
+        title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+        type: object
+        properties:
+            fault:
+                type: boolean
+                description: Is the error a server-side fault?
+                example: false
+            id:
+                type: string
+                description: ID is a unique identifier for this particular occurrence of the problem.
+                example: 123abc
+            message:
+                type: string
+                description: Message is a human-readable explanation specific to this occurrence of the problem.
+                example: parameter 'p' must be an integer
+            name:
+                type: string
+                description: Name is the name of this class of errors.
+                example: bad_request
+            temporary:
+                type: boolean
+                description: Is the error temporary?
+                example: false
+            timeout:
+                type: boolean
+                description: Is the error a timeout?
+                example: false
+        description: getStatusOrderById_no_match_response_body result type (default view)
+        example:
+            fault: true
+            id: 123abc
+            message: parameter 'p' must be an integer
+            name: bad_request
+            temporary: true
+            timeout: true
+        required:
+            - name
+            - id
+            - message
+            - temporary
+            - timeout
+            - fault
+    MsordermsGetStatusOrderByIDResponseBody:
+        title: 'Mediatype identifier: statoordine; view=default'
+        type: object
+        properties:
+            ordineId:
+                type: string
+                description: Id Ordine
+                example: Est nostrum autem aliquid.
             statoOrdine:
                 type: string
                 example: confermato
@@ -203,29 +263,10 @@ definitions:
                     - presa in carico
                     - confermato
                     - annullato
+        description: GetStatusOrderByIdResponseBody result type (default view)
         example:
             ordineId: Repellendus cumque optio quo modi magnam.
             statoOrdine: in elaborazione
-    MsordermsGetStatusOrderByIDResponseBody:
-        title: MsordermsGetStatusOrderByIDResponseBody
-        type: object
-        properties:
-            ordineId:
-                type: string
-                description: Id Ordine
-                example: Sit eos quia et consequatur magnam itaque.
-            statoOrdine:
-                type: string
-                example: annullato
-                enum:
-                    - da elaborare
-                    - in elaborazione
-                    - presa in carico
-                    - confermato
-                    - annullato
-        example:
-            ordineId: Nemo eos ad esse deserunt.
-            statoOrdine: presa in carico
     RigaOrdineRequestBody:
         title: RigaOrdineRequestBody
         type: object
@@ -233,36 +274,36 @@ definitions:
             barcode:
                 type: string
                 description: Barcode Articolo
-                example: Vel facilis neque.
+                example: Quidem quia alias expedita ipsum debitis.
             colore:
                 type: string
                 description: Codice Colore
-                example: Cumque laborum ratione suscipit et officiis quis.
+                example: Adipisci labore.
             modello:
                 type: string
                 description: Codice Articolo
-                example: Eos illum.
+                example: Unde qui vitae quod temporibus voluptatem.
             prezzo:
                 type: number
                 description: Prezzo
-                example: 0.4188796
+                example: 0.338012
                 format: float
             quantita:
                 type: integer
                 description: Numero pezzi
-                example: 5634526209696178825
+                example: 948708886759015634
                 format: int64
             taglia:
                 type: string
                 description: Codice Taglia
-                example: Quae temporibus quidem quia.
+                example: Atque corrupti iure.
         example:
-            barcode: Debitis non unde qui vitae.
-            colore: Corrupti iure velit qui vitae.
-            modello: Temporibus voluptatem accusamus adipisci labore laudantium.
-            prezzo: 0.24099192
-            quantita: 7343095073356108579
-            taglia: Aspernatur est quia et magnam qui laboriosam.
+            barcode: Fuga aspernatur est quia et magnam qui.
+            colore: Corrupti laborum voluptatem culpa quibusdam.
+            modello: Incidunt dolores deleniti voluptatem veniam.
+            prezzo: 0.1066541
+            quantita: 7750939666605741140
+            taglia: Quas in voluptas.
         required:
             - barcode
             - quantita

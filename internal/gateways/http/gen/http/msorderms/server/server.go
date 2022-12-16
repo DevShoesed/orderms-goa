@@ -21,8 +21,8 @@ import (
 type Server struct {
 	Mounts             []*MountPoint
 	SayHello           http.Handler
-	CreateOrder        http.Handler
 	GetStatusOrderByID http.Handler
+	CreateOrder        http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -52,13 +52,13 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
-			{"SayHello", "GET", "/sayHello"},
-			{"CreateOrder", "POST", "/order"},
-			{"GetStatusOrderByID", "GET", "/order/{idOrdine}"},
+			{"SayHello", "GET", "/api/v4/msorderms/sayHello"},
+			{"GetStatusOrderByID", "GET", "/api/v4/msorderms/order/{idOrdine}"},
+			{"CreateOrder", "POST", "/api/v4/msorderms/order"},
 		},
 		SayHello:           NewSayHelloHandler(e.SayHello, mux, decoder, encoder, errhandler, formatter),
-		CreateOrder:        NewCreateOrderHandler(e.CreateOrder, mux, decoder, encoder, errhandler, formatter),
 		GetStatusOrderByID: NewGetStatusOrderByIDHandler(e.GetStatusOrderByID, mux, decoder, encoder, errhandler, formatter),
+		CreateOrder:        NewCreateOrderHandler(e.CreateOrder, mux, decoder, encoder, errhandler, formatter),
 	}
 }
 
@@ -68,8 +68,8 @@ func (s *Server) Service() string { return "msorderms" }
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.SayHello = m(s.SayHello)
-	s.CreateOrder = m(s.CreateOrder)
 	s.GetStatusOrderByID = m(s.GetStatusOrderByID)
+	s.CreateOrder = m(s.CreateOrder)
 }
 
 // MethodNames returns the methods served.
@@ -78,8 +78,8 @@ func (s *Server) MethodNames() []string { return msorderms.MethodNames[:] }
 // Mount configures the mux to serve the msorderms endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountSayHelloHandler(mux, h.SayHello)
-	MountCreateOrderHandler(mux, h.CreateOrder)
 	MountGetStatusOrderByIDHandler(mux, h.GetStatusOrderByID)
+	MountCreateOrderHandler(mux, h.CreateOrder)
 }
 
 // Mount configures the mux to serve the msorderms endpoints.
@@ -88,7 +88,7 @@ func (s *Server) Mount(mux goahttp.Muxer) {
 }
 
 // MountSayHelloHandler configures the mux to serve the "msorderms" service
-// "SayHello" endpoint.
+// "sayHello" endpoint.
 func MountSayHelloHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := h.(http.HandlerFunc)
 	if !ok {
@@ -96,11 +96,11 @@ func MountSayHelloHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/sayHello", f)
+	mux.Handle("GET", "/api/v4/msorderms/sayHello", f)
 }
 
 // NewSayHelloHandler creates a HTTP handler which loads the HTTP request and
-// calls the "msorderms" service "SayHello" endpoint.
+// calls the "msorderms" service "sayHello" endpoint.
 func NewSayHelloHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
@@ -116,58 +116,7 @@ func NewSayHelloHandler(
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "SayHello")
-		ctx = context.WithValue(ctx, goa.ServiceKey, "msorderms")
-		payload, err := decodeRequest(r)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		res, err := endpoint(ctx, payload)
-		if err != nil {
-			if err := encodeError(ctx, w, err); err != nil {
-				errhandler(ctx, w, err)
-			}
-			return
-		}
-		if err := encodeResponse(ctx, w, res); err != nil {
-			errhandler(ctx, w, err)
-		}
-	})
-}
-
-// MountCreateOrderHandler configures the mux to serve the "msorderms" service
-// "CreateOrder" endpoint.
-func MountCreateOrderHandler(mux goahttp.Muxer, h http.Handler) {
-	f, ok := h.(http.HandlerFunc)
-	if !ok {
-		f = func(w http.ResponseWriter, r *http.Request) {
-			h.ServeHTTP(w, r)
-		}
-	}
-	mux.Handle("POST", "/order", f)
-}
-
-// NewCreateOrderHandler creates a HTTP handler which loads the HTTP request
-// and calls the "msorderms" service "CreateOrder" endpoint.
-func NewCreateOrderHandler(
-	endpoint goa.Endpoint,
-	mux goahttp.Muxer,
-	decoder func(*http.Request) goahttp.Decoder,
-	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
-	errhandler func(context.Context, http.ResponseWriter, error),
-	formatter func(ctx context.Context, err error) goahttp.Statuser,
-) http.Handler {
-	var (
-		decodeRequest  = DecodeCreateOrderRequest(mux, decoder)
-		encodeResponse = EncodeCreateOrderResponse(encoder)
-		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
-	)
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "CreateOrder")
+		ctx = context.WithValue(ctx, goa.MethodKey, "sayHello")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "msorderms")
 		payload, err := decodeRequest(r)
 		if err != nil {
@@ -190,7 +139,7 @@ func NewCreateOrderHandler(
 }
 
 // MountGetStatusOrderByIDHandler configures the mux to serve the "msorderms"
-// service "GetStatusOrderById" endpoint.
+// service "getStatusOrderById" endpoint.
 func MountGetStatusOrderByIDHandler(mux goahttp.Muxer, h http.Handler) {
 	f, ok := h.(http.HandlerFunc)
 	if !ok {
@@ -198,11 +147,11 @@ func MountGetStatusOrderByIDHandler(mux goahttp.Muxer, h http.Handler) {
 			h.ServeHTTP(w, r)
 		}
 	}
-	mux.Handle("GET", "/order/{idOrdine}", f)
+	mux.Handle("GET", "/api/v4/msorderms/order/{idOrdine}", f)
 }
 
 // NewGetStatusOrderByIDHandler creates a HTTP handler which loads the HTTP
-// request and calls the "msorderms" service "GetStatusOrderById" endpoint.
+// request and calls the "msorderms" service "getStatusOrderById" endpoint.
 func NewGetStatusOrderByIDHandler(
 	endpoint goa.Endpoint,
 	mux goahttp.Muxer,
@@ -214,11 +163,62 @@ func NewGetStatusOrderByIDHandler(
 	var (
 		decodeRequest  = DecodeGetStatusOrderByIDRequest(mux, decoder)
 		encodeResponse = EncodeGetStatusOrderByIDResponse(encoder)
-		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+		encodeError    = EncodeGetStatusOrderByIDError(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
-		ctx = context.WithValue(ctx, goa.MethodKey, "GetStatusOrderById")
+		ctx = context.WithValue(ctx, goa.MethodKey, "getStatusOrderById")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "msorderms")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountCreateOrderHandler configures the mux to serve the "msorderms" service
+// "createOrder" endpoint.
+func MountCreateOrderHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/api/v4/msorderms/order", f)
+}
+
+// NewCreateOrderHandler creates a HTTP handler which loads the HTTP request
+// and calls the "msorderms" service "createOrder" endpoint.
+func NewCreateOrderHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeCreateOrderRequest(mux, decoder)
+		encodeResponse = EncodeCreateOrderResponse(encoder)
+		encodeError    = EncodeCreateOrderError(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "createOrder")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "msorderms")
 		payload, err := decodeRequest(r)
 		if err != nil {

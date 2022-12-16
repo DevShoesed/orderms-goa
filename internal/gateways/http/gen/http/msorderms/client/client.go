@@ -18,17 +18,17 @@ import (
 
 // Client lists the msorderms service endpoint HTTP clients.
 type Client struct {
-	// SayHello Doer is the HTTP client used to make requests to the SayHello
+	// SayHello Doer is the HTTP client used to make requests to the sayHello
 	// endpoint.
 	SayHelloDoer goahttp.Doer
 
-	// CreateOrder Doer is the HTTP client used to make requests to the CreateOrder
+	// GetStatusOrderByID Doer is the HTTP client used to make requests to the
+	// getStatusOrderById endpoint.
+	GetStatusOrderByIDDoer goahttp.Doer
+
+	// CreateOrder Doer is the HTTP client used to make requests to the createOrder
 	// endpoint.
 	CreateOrderDoer goahttp.Doer
-
-	// GetStatusOrderByID Doer is the HTTP client used to make requests to the
-	// GetStatusOrderById endpoint.
-	GetStatusOrderByIDDoer goahttp.Doer
 
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
@@ -51,8 +51,8 @@ func NewClient(
 ) *Client {
 	return &Client{
 		SayHelloDoer:           doer,
-		CreateOrderDoer:        doer,
 		GetStatusOrderByIDDoer: doer,
+		CreateOrderDoer:        doer,
 		RestoreResponseBody:    restoreBody,
 		scheme:                 scheme,
 		host:                   host,
@@ -62,7 +62,7 @@ func NewClient(
 }
 
 // SayHello returns an endpoint that makes HTTP requests to the msorderms
-// service SayHello server.
+// service sayHello server.
 func (c *Client) SayHello() goa.Endpoint {
 	var (
 		encodeRequest  = EncodeSayHelloRequest(c.encoder)
@@ -79,14 +79,33 @@ func (c *Client) SayHello() goa.Endpoint {
 		}
 		resp, err := c.SayHelloDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("msorderms", "SayHello", err)
+			return nil, goahttp.ErrRequestError("msorderms", "sayHello", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// GetStatusOrderByID returns an endpoint that makes HTTP requests to the
+// msorderms service getStatusOrderById server.
+func (c *Client) GetStatusOrderByID() goa.Endpoint {
+	var (
+		decodeResponse = DecodeGetStatusOrderByIDResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v interface{}) (interface{}, error) {
+		req, err := c.BuildGetStatusOrderByIDRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.GetStatusOrderByIDDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("msorderms", "getStatusOrderById", err)
 		}
 		return decodeResponse(resp)
 	}
 }
 
 // CreateOrder returns an endpoint that makes HTTP requests to the msorderms
-// service CreateOrder server.
+// service createOrder server.
 func (c *Client) CreateOrder() goa.Endpoint {
 	var (
 		encodeRequest  = EncodeCreateOrderRequest(c.encoder)
@@ -103,26 +122,7 @@ func (c *Client) CreateOrder() goa.Endpoint {
 		}
 		resp, err := c.CreateOrderDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("msorderms", "CreateOrder", err)
-		}
-		return decodeResponse(resp)
-	}
-}
-
-// GetStatusOrderByID returns an endpoint that makes HTTP requests to the
-// msorderms service GetStatusOrderById server.
-func (c *Client) GetStatusOrderByID() goa.Endpoint {
-	var (
-		decodeResponse = DecodeGetStatusOrderByIDResponse(c.decoder, c.RestoreResponseBody)
-	)
-	return func(ctx context.Context, v interface{}) (interface{}, error) {
-		req, err := c.BuildGetStatusOrderByIDRequest(ctx, v)
-		if err != nil {
-			return nil, err
-		}
-		resp, err := c.GetStatusOrderByIDDoer.Do(req)
-		if err != nil {
-			return nil, goahttp.ErrRequestError("msorderms", "GetStatusOrderById", err)
+			return nil, goahttp.ErrRequestError("msorderms", "createOrder", err)
 		}
 		return decodeResponse(resp)
 	}

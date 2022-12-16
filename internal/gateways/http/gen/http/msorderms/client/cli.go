@@ -16,7 +16,7 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// BuildSayHelloPayload builds the payload for the msorderms SayHello endpoint
+// BuildSayHelloPayload builds the payload for the msorderms sayHello endpoint
 // from CLI flags.
 func BuildSayHelloPayload(msordermsSayHelloName string) (*msorderms.SayHelloPayload, error) {
 	var name string
@@ -29,7 +29,20 @@ func BuildSayHelloPayload(msordermsSayHelloName string) (*msorderms.SayHelloPayl
 	return v, nil
 }
 
-// BuildCreateOrderPayload builds the payload for the msorderms CreateOrder
+// BuildGetStatusOrderByIDPayload builds the payload for the msorderms
+// getStatusOrderById endpoint from CLI flags.
+func BuildGetStatusOrderByIDPayload(msordermsGetStatusOrderByIDIDOrdine string) (*msorderms.GetStatusOrderByIDPayload, error) {
+	var idOrdine string
+	{
+		idOrdine = msordermsGetStatusOrderByIDIDOrdine
+	}
+	v := &msorderms.GetStatusOrderByIDPayload{}
+	v.IDOrdine = idOrdine
+
+	return v, nil
+}
+
+// BuildCreateOrderPayload builds the payload for the msorderms createOrder
 // endpoint from CLI flags.
 func BuildCreateOrderPayload(msordermsCreateOrderBody string) (*msorderms.OrdineRequest, error) {
 	var err error
@@ -37,7 +50,7 @@ func BuildCreateOrderPayload(msordermsCreateOrderBody string) (*msorderms.Ordine
 	{
 		err = json.Unmarshal([]byte(msordermsCreateOrderBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"cognomeCliente\": \"Nostrum aspernatur dignissimos voluptatibus architecto id.\",\n      \"dataOrdine\": \"Et soluta rerum aut.\",\n      \"idOrdine\": \"Similique iusto harum illum voluptas eos.\",\n      \"nomeCliente\": \"Ut reiciendis quisquam.\",\n      \"righeOrdine\": [\n         {\n            \"barcode\": \"Sapiente aut ipsam adipisci voluptatum modi.\",\n            \"colore\": \"Repellendus et consectetur placeat alias tenetur maiores.\",\n            \"modello\": \"Facilis est consectetur enim expedita consectetur.\",\n            \"prezzo\": 0.46302,\n            \"quantita\": 3961194039189103112,\n            \"taglia\": \"Non sunt ea.\"\n         },\n         {\n            \"barcode\": \"Sapiente aut ipsam adipisci voluptatum modi.\",\n            \"colore\": \"Repellendus et consectetur placeat alias tenetur maiores.\",\n            \"modello\": \"Facilis est consectetur enim expedita consectetur.\",\n            \"prezzo\": 0.46302,\n            \"quantita\": 3961194039189103112,\n            \"taglia\": \"Non sunt ea.\"\n         }\n      ],\n      \"store\": \"Occaecati quis eum placeat.\",\n      \"tipologiaOrdine\": \"corriere\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"cognomeCliente\": \"Facilis est consectetur enim expedita consectetur.\",\n      \"dataOrdine\": \"Aspernatur dignissimos voluptatibus architecto id.\",\n      \"idOrdine\": \"Et soluta rerum aut.\",\n      \"nomeCliente\": \"Sapiente aut ipsam adipisci voluptatum modi.\",\n      \"righeOrdine\": [\n         {\n            \"barcode\": \"Et consectetur.\",\n            \"colore\": \"Voluptatem non sunt ea.\",\n            \"modello\": \"Alias tenetur.\",\n            \"prezzo\": 0.78429174,\n            \"quantita\": 7708216444412231043,\n            \"taglia\": \"Nobis minima sit a qui.\"\n         },\n         {\n            \"barcode\": \"Et consectetur.\",\n            \"colore\": \"Voluptatem non sunt ea.\",\n            \"modello\": \"Alias tenetur.\",\n            \"prezzo\": 0.78429174,\n            \"quantita\": 7708216444412231043,\n            \"taglia\": \"Nobis minima sit a qui.\"\n         }\n      ],\n      \"store\": \"Sed ut reiciendis quisquam ipsa.\",\n      \"tipologiaOrdine\": \"negozio\"\n   }'")
 		}
 		if !(body.TipologiaOrdine == "corriere" || body.TipologiaOrdine == "negozio") {
 			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.tipologiaOrdine", body.TipologiaOrdine, []interface{}{"corriere", "negozio"}))
@@ -60,19 +73,6 @@ func BuildCreateOrderPayload(msordermsCreateOrderBody string) (*msorderms.Ordine
 			v.RigheOrdine[i] = marshalRigaOrdineRequestBodyToMsordermsRigaOrdine(val)
 		}
 	}
-
-	return v, nil
-}
-
-// BuildGetStatusOrderByIDPayload builds the payload for the msorderms
-// GetStatusOrderById endpoint from CLI flags.
-func BuildGetStatusOrderByIDPayload(msordermsGetStatusOrderByIDIDOrdine string) (*msorderms.GetStatusOrderByIDPayload, error) {
-	var idOrdine string
-	{
-		idOrdine = msordermsGetStatusOrderByIDIDOrdine
-	}
-	v := &msorderms.GetStatusOrderByIDPayload{}
-	v.IDOrdine = idOrdine
 
 	return v, nil
 }

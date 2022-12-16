@@ -16,27 +16,21 @@ import (
 
 // Client is the "msorderms" service client.
 type Client struct {
-	SayHelloEndpoint                   goa.Endpoint
-	CreateOrderEndpoint                goa.Endpoint
-	GetStatusOrderByIDEndpoint         goa.Endpoint
-	SayHelloEndpointEndpoint           goa.Endpoint
-	CreateOrderEndpointEndpoint        goa.Endpoint
-	GetStatusOrderByIDEndpointEndpoint goa.Endpoint
+	SayHelloEndpoint           goa.Endpoint
+	GetStatusOrderByIDEndpoint goa.Endpoint
+	CreateOrderEndpoint        goa.Endpoint
 }
 
 // NewClient initializes a "msorderms" service client given the endpoints.
-func NewClient(sayHello, createOrder, getStatusOrderByID, sayHelloEndpoint, createOrderEndpoint, getStatusOrderByIDEndpoint goa.Endpoint) *Client {
+func NewClient(sayHello, getStatusOrderByID, createOrder goa.Endpoint) *Client {
 	return &Client{
-		SayHelloEndpoint:                   sayHello,
-		CreateOrderEndpoint:                createOrder,
-		GetStatusOrderByIDEndpoint:         getStatusOrderByID,
-		SayHelloEndpointEndpoint:           sayHelloEndpoint,
-		CreateOrderEndpointEndpoint:        createOrderEndpoint,
-		GetStatusOrderByIDEndpointEndpoint: getStatusOrderByIDEndpoint,
+		SayHelloEndpoint:           sayHello,
+		GetStatusOrderByIDEndpoint: getStatusOrderByID,
+		CreateOrderEndpoint:        createOrder,
 	}
 }
 
-// SayHello calls the "SayHello" endpoint of the "msorderms" service.
+// SayHello calls the "sayHello" endpoint of the "msorderms" service.
 func (c *Client) SayHello(ctx context.Context, p *SayHelloPayload) (res string, err error) {
 	var ires interface{}
 	ires, err = c.SayHelloEndpoint(ctx, p)
@@ -46,18 +40,11 @@ func (c *Client) SayHello(ctx context.Context, p *SayHelloPayload) (res string, 
 	return ires.(string), nil
 }
 
-// CreateOrder calls the "CreateOrder" endpoint of the "msorderms" service.
-func (c *Client) CreateOrder(ctx context.Context, p *OrdineRequest) (res *StatoOrdine, err error) {
-	var ires interface{}
-	ires, err = c.CreateOrderEndpoint(ctx, p)
-	if err != nil {
-		return
-	}
-	return ires.(*StatoOrdine), nil
-}
-
-// GetStatusOrderByID calls the "GetStatusOrderById" endpoint of the
+// GetStatusOrderByID calls the "getStatusOrderById" endpoint of the
 // "msorderms" service.
+// GetStatusOrderByID may return the following errors:
+//	- "no_match" (type *goa.ServiceError)
+//	- error: internal error
 func (c *Client) GetStatusOrderByID(ctx context.Context, p *GetStatusOrderByIDPayload) (res *StatoOrdine, err error) {
 	var ires interface{}
 	ires, err = c.GetStatusOrderByIDEndpoint(ctx, p)
@@ -67,38 +54,13 @@ func (c *Client) GetStatusOrderByID(ctx context.Context, p *GetStatusOrderByIDPa
 	return ires.(*StatoOrdine), nil
 }
 
-// SayHelloEndpoint calls the "SayHello" endpoint of the "msorderms" service.
-func (c *Client) SayHelloEndpoint(ctx context.Context, p *SayHelloPayload) (res string, err error) {
-	var ires interface{}
-	ires, err = c.SayHelloEndpointEndpoint(ctx, p)
-	if err != nil {
-		return
-	}
-	return ires.(string), nil
-}
-
-// CreateOrderEndpoint calls the "CreateOrder" endpoint of the "msorderms"
-// service.
-// CreateOrderEndpoint may return the following errors:
-//	- "no_criteria" (type *goa.ServiceError)
+// CreateOrder calls the "createOrder" endpoint of the "msorderms" service.
+// CreateOrder may return the following errors:
+//	- "no_criteria" (type NoCriteria)
 //	- error: internal error
-func (c *Client) CreateOrderEndpoint(ctx context.Context, p *OrdineRequest) (res *StatoOrdine, err error) {
+func (c *Client) CreateOrder(ctx context.Context, p *OrdineRequest) (res *StatoOrdine, err error) {
 	var ires interface{}
-	ires, err = c.CreateOrderEndpointEndpoint(ctx, p)
-	if err != nil {
-		return
-	}
-	return ires.(*StatoOrdine), nil
-}
-
-// GetStatusOrderByIDEndpoint calls the "GetStatusOrderById" endpoint of the
-// "msorderms" service.
-// GetStatusOrderByIDEndpoint may return the following errors:
-//	- "no_match" (type *goa.ServiceError)
-//	- error: internal error
-func (c *Client) GetStatusOrderByIDEndpoint(ctx context.Context, p *GetStatusOrderByIDPayload) (res *StatoOrdine, err error) {
-	var ires interface{}
-	ires, err = c.GetStatusOrderByIDEndpointEndpoint(ctx, p)
+	ires, err = c.CreateOrderEndpoint(ctx, p)
 	if err != nil {
 		return
 	}

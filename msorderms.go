@@ -3,14 +3,14 @@ package msorderms
 import (
 	"context"
 	"log"
-	"orderms/gen/msorderms"
+	"orderms/internal/gateways/http/gen/msorderms"
 )
 
 type msordermsSvc struct {
 	logger *log.Logger
 }
 
-// NewMsorderms return the msorders service implementation
+// NewMsorderms return the msorderms service implementation
 func NewMsorderms(logger *log.Logger) msorderms.Service {
 	return &msordermsSvc{logger}
 }
@@ -21,7 +21,7 @@ func (s *msordermsSvc) SayHello(ctx context.Context, p *msorderms.SayHelloPayloa
 	}
 
 	res = "Hello, " + p.Name
-	return res, nil
+	return
 }
 
 func (s *msordermsSvc) CreateOrder(ctx context.Context, p *msorderms.OrdineRequest) (res *msorderms.StatoOrdine, err error) {
@@ -30,5 +30,12 @@ func (s *msordermsSvc) CreateOrder(ctx context.Context, p *msorderms.OrdineReque
 	}
 
 	s.logger.Print("order create")
-	return res, nil
+	return
+}
+
+func (s *msordermsSvc) GetStatusOrderByID(ctx context.Context, p *msorderms.GetStatusOrderByIDPayload) (res *msorderms.StatoOrdine, err error) {
+
+	s.logger.Print("get status order by Id")
+
+	return
 }

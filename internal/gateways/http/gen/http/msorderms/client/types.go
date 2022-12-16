@@ -10,11 +10,12 @@ package client
 
 import (
 	msorderms "orderms/internal/gateways/http/gen/msorderms"
+	msordermsviews "orderms/internal/gateways/http/gen/msorderms/views"
 
 	goa "goa.design/goa/v3/pkg"
 )
 
-// CreateOrderRequestBody is the type of the "msorderms" service "CreateOrder"
+// CreateOrderRequestBody is the type of the "msorderms" service "createOrder"
 // endpoint HTTP request body.
 type CreateOrderRequestBody struct {
 	// Id Ordine
@@ -33,7 +34,15 @@ type CreateOrderRequestBody struct {
 	RigheOrdine []*RigaOrdineRequestBody `form:"righeOrdine,omitempty" json:"righeOrdine,omitempty" xml:"righeOrdine,omitempty"`
 }
 
-// CreateOrderResponseBody is the type of the "msorderms" service "CreateOrder"
+// GetStatusOrderByIDResponseBody is the type of the "msorderms" service
+// "getStatusOrderById" endpoint HTTP response body.
+type GetStatusOrderByIDResponseBody struct {
+	// Id Ordine
+	OrdineID    *string `form:"ordineId,omitempty" json:"ordineId,omitempty" xml:"ordineId,omitempty"`
+	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
+}
+
+// CreateOrderResponseBody is the type of the "msorderms" service "createOrder"
 // endpoint HTTP response body.
 type CreateOrderResponseBody struct {
 	// Id Ordine
@@ -41,12 +50,22 @@ type CreateOrderResponseBody struct {
 	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
 }
 
-// GetStatusOrderByIDResponseBody is the type of the "msorderms" service
-// "GetStatusOrderById" endpoint HTTP response body.
-type GetStatusOrderByIDResponseBody struct {
-	// Id Ordine
-	OrdineID    *string `form:"ordineId,omitempty" json:"ordineId,omitempty" xml:"ordineId,omitempty"`
-	StatoOrdine *string `form:"statoOrdine,omitempty" json:"statoOrdine,omitempty" xml:"statoOrdine,omitempty"`
+// GetStatusOrderByIDNoMatchResponseBody is the type of the "msorderms" service
+// "getStatusOrderById" endpoint HTTP response body for the "no_match" error.
+type GetStatusOrderByIDNoMatchResponseBody struct {
+	// Name is the name of this class of errors.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+	// Is the error temporary?
+	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
+	// Is the error a timeout?
+	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
+	// Is the error a server-side fault?
+	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
 }
 
 // RigaOrdineRequestBody is used to define fields on request body types.
@@ -66,7 +85,7 @@ type RigaOrdineRequestBody struct {
 }
 
 // NewCreateOrderRequestBody builds the HTTP request body from the payload of
-// the "CreateOrder" endpoint of the "msorderms" service.
+// the "createOrder" endpoint of the "msorderms" service.
 func NewCreateOrderRequestBody(p *msorderms.OrdineRequest) *CreateOrderRequestBody {
 	body := &CreateOrderRequestBody{
 		IDOrdine:        p.IDOrdine,
@@ -85,21 +104,10 @@ func NewCreateOrderRequestBody(p *msorderms.OrdineRequest) *CreateOrderRequestBo
 	return body
 }
 
-// NewCreateOrderStatoOrdineCreated builds a "msorderms" service "CreateOrder"
-// endpoint result from a HTTP "Created" response.
-func NewCreateOrderStatoOrdineCreated(body *CreateOrderResponseBody) *msorderms.StatoOrdine {
-	v := &msorderms.StatoOrdine{
-		OrdineID:    body.OrdineID,
-		StatoOrdine: body.StatoOrdine,
-	}
-
-	return v
-}
-
 // NewGetStatusOrderByIDStatoOrdineOK builds a "msorderms" service
-// "GetStatusOrderById" endpoint result from a HTTP "OK" response.
-func NewGetStatusOrderByIDStatoOrdineOK(body *GetStatusOrderByIDResponseBody) *msorderms.StatoOrdine {
-	v := &msorderms.StatoOrdine{
+// "getStatusOrderById" endpoint result from a HTTP "OK" response.
+func NewGetStatusOrderByIDStatoOrdineOK(body *GetStatusOrderByIDResponseBody) *msordermsviews.StatoOrdineView {
+	v := &msordermsviews.StatoOrdineView{
 		OrdineID:    body.OrdineID,
 		StatoOrdine: body.StatoOrdine,
 	}
@@ -107,24 +115,60 @@ func NewGetStatusOrderByIDStatoOrdineOK(body *GetStatusOrderByIDResponseBody) *m
 	return v
 }
 
-// ValidateCreateOrderResponseBody runs the validations defined on
-// CreateOrderResponseBody
-func ValidateCreateOrderResponseBody(body *CreateOrderResponseBody) (err error) {
-	if body.StatoOrdine != nil {
-		if !(*body.StatoOrdine == "da elaborare" || *body.StatoOrdine == "in elaborazione" || *body.StatoOrdine == "presa in carico" || *body.StatoOrdine == "confermato" || *body.StatoOrdine == "annullato") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.statoOrdine", *body.StatoOrdine, []interface{}{"da elaborare", "in elaborazione", "presa in carico", "confermato", "annullato"}))
-		}
+// NewGetStatusOrderByIDNoMatch builds a msorderms service getStatusOrderById
+// endpoint no_match error.
+func NewGetStatusOrderByIDNoMatch(body *GetStatusOrderByIDNoMatchResponseBody) *goa.ServiceError {
+	v := &goa.ServiceError{
+		Name:      *body.Name,
+		ID:        *body.ID,
+		Message:   *body.Message,
+		Temporary: *body.Temporary,
+		Timeout:   *body.Timeout,
+		Fault:     *body.Fault,
 	}
-	return
+
+	return v
 }
 
-// ValidateGetStatusOrderByIDResponseBody runs the validations defined on
-// GetStatusOrderByIdResponseBody
-func ValidateGetStatusOrderByIDResponseBody(body *GetStatusOrderByIDResponseBody) (err error) {
-	if body.StatoOrdine != nil {
-		if !(*body.StatoOrdine == "da elaborare" || *body.StatoOrdine == "in elaborazione" || *body.StatoOrdine == "presa in carico" || *body.StatoOrdine == "confermato" || *body.StatoOrdine == "annullato") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.statoOrdine", *body.StatoOrdine, []interface{}{"da elaborare", "in elaborazione", "presa in carico", "confermato", "annullato"}))
-		}
+// NewCreateOrderStatoOrdineCreated builds a "msorderms" service "createOrder"
+// endpoint result from a HTTP "Created" response.
+func NewCreateOrderStatoOrdineCreated(body *CreateOrderResponseBody) *msordermsviews.StatoOrdineView {
+	v := &msordermsviews.StatoOrdineView{
+		OrdineID:    body.OrdineID,
+		StatoOrdine: body.StatoOrdine,
+	}
+
+	return v
+}
+
+// NewCreateOrderNoCriteria builds a msorderms service createOrder endpoint
+// no_criteria error.
+func NewCreateOrderNoCriteria(body string) msorderms.NoCriteria {
+	v := msorderms.NoCriteria(body)
+
+	return v
+}
+
+// ValidateGetStatusOrderByIDNoMatchResponseBody runs the validations defined
+// on getStatusOrderById_no_match_response_body
+func ValidateGetStatusOrderByIDNoMatchResponseBody(body *GetStatusOrderByIDNoMatchResponseBody) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	if body.Temporary == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
+	}
+	if body.Timeout == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
+	}
+	if body.Fault == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
 	}
 	return
 }

@@ -16,46 +16,6 @@ var _ = API("msorderms", func() {
 	})
 })
 
-var _ = Service("msorderms", func() {
-	Description("The service manager order")
-
-	Method("SayHello", func() {
-		Payload(func() {
-			Field(1, "name", String, "Name")
-			Required("name")
-		})
-		Result(String)
-
-		HTTP(func() {
-			GET("/sayHello")
-			Param("name")
-		})
-
-		// GRPC(func ()  {})
-	})
-
-	Method("CreateOrder", func() {
-		Payload(CreateOrderPayload)
-		Result(StatoOrdine)
-
-		HTTP(func() {
-			POST("/order")
-		})
-	})
-
-	Method("GetStatusOrderById", func() {
-		Payload(func() {
-			Field(1, "idOrdine", String, "IdOrdine")
-			Required("idOrdine")
-		})
-		Result(StatoOrdine)
-
-		HTTP(func() {
-			GET("/order/{idOrdine}")
-		})
-	})
-})
-
 var RigaOrdine = Type("RigaOrdine", func() {
 	Attribute("barcode", String, "Barcode Articolo")
 	Attribute("modello", String, "Codice Articolo")
@@ -81,9 +41,18 @@ var CreateOrderPayload = Type("OrdineRequest", func() {
 	Required("idOrdine", "store", "tipologiaOrdine")
 })
 
-var StatoOrdine = Type("StatoOrdine", func() {
-	Attribute("ordineId", String, "Id Ordine")
-	Attribute("statoOrdine", func() {
-		Enum("da elaborare", "in elaborazione", "presa in carico", "confermato", "annullato")
+var StatoOrdine = ResultType("StatoOrdine", func() {
+	Description("A StatoOrdine describe a state of Order.")
+	TypeName("StatoOrdine")
+	Attributes(func() {
+		Attribute("ordineId", String, "Id Ordine")
+		Attribute("statoOrdine", func() {
+			Enum("da elaborare", "in elaborazione", "presa in carico", "confermato", "annullato")
+		})
 	})
+	View("default", func() {
+		Attribute("ordineId")
+		Attribute("statoOrdine")
+	})
+
 })

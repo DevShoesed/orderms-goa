@@ -24,13 +24,13 @@ import (
 //    command (subcommand1|subcommand2|...)
 //
 func UsageCommands() string {
-	return `msorderms (say-hello|create-order|get-status-order-by-id)
+	return `msorderms (say-hello|get-status-order-by-id|create-order)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + ` msorderms say-hello --name "Officia qui et et amet laudantium."` + "\n" +
+	return os.Args[0] + ` msorderms say-hello --name "Et alias."` + "\n" +
 		""
 }
 
@@ -49,16 +49,16 @@ func ParseEndpoint(
 		msordermsSayHelloFlags    = flag.NewFlagSet("say-hello", flag.ExitOnError)
 		msordermsSayHelloNameFlag = msordermsSayHelloFlags.String("name", "REQUIRED", "")
 
-		msordermsCreateOrderFlags    = flag.NewFlagSet("create-order", flag.ExitOnError)
-		msordermsCreateOrderBodyFlag = msordermsCreateOrderFlags.String("body", "REQUIRED", "")
-
 		msordermsGetStatusOrderByIDFlags        = flag.NewFlagSet("get-status-order-by-id", flag.ExitOnError)
 		msordermsGetStatusOrderByIDIDOrdineFlag = msordermsGetStatusOrderByIDFlags.String("id-ordine", "REQUIRED", "IdOrdine")
+
+		msordermsCreateOrderFlags    = flag.NewFlagSet("create-order", flag.ExitOnError)
+		msordermsCreateOrderBodyFlag = msordermsCreateOrderFlags.String("body", "REQUIRED", "")
 	)
 	msordermsFlags.Usage = msordermsUsage
 	msordermsSayHelloFlags.Usage = msordermsSayHelloUsage
-	msordermsCreateOrderFlags.Usage = msordermsCreateOrderUsage
 	msordermsGetStatusOrderByIDFlags.Usage = msordermsGetStatusOrderByIDUsage
+	msordermsCreateOrderFlags.Usage = msordermsCreateOrderUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -97,11 +97,11 @@ func ParseEndpoint(
 			case "say-hello":
 				epf = msordermsSayHelloFlags
 
-			case "create-order":
-				epf = msordermsCreateOrderFlags
-
 			case "get-status-order-by-id":
 				epf = msordermsGetStatusOrderByIDFlags
+
+			case "create-order":
+				epf = msordermsCreateOrderFlags
 
 			}
 
@@ -131,12 +131,12 @@ func ParseEndpoint(
 			case "say-hello":
 				endpoint = c.SayHello()
 				data, err = msordermsc.BuildSayHelloPayload(*msordermsSayHelloNameFlag)
-			case "create-order":
-				endpoint = c.CreateOrder()
-				data, err = msordermsc.BuildCreateOrderPayload(*msordermsCreateOrderBodyFlag)
 			case "get-status-order-by-id":
 				endpoint = c.GetStatusOrderByID()
 				data, err = msordermsc.BuildGetStatusOrderByIDPayload(*msordermsGetStatusOrderByIDIDOrdineFlag)
+			case "create-order":
+				endpoint = c.CreateOrder()
+				data, err = msordermsc.BuildCreateOrderPayload(*msordermsCreateOrderBodyFlag)
 			}
 		}
 	}
@@ -155,9 +155,9 @@ Usage:
     %[1]s [globalflags] msorderms COMMAND [flags]
 
 COMMAND:
-    say-hello: SayHello implements SayHello.
-    create-order: CreateOrder implements CreateOrder.
-    get-status-order-by-id: GetStatusOrderByID implements GetStatusOrderById.
+    say-hello: SayHello implements sayHello.
+    get-status-order-by-id: GetStatusOrderByID implements getStatusOrderById.
+    create-order: CreateOrder implements createOrder.
 
 Additional help:
     %[1]s msorderms COMMAND --help
@@ -166,57 +166,57 @@ Additional help:
 func msordermsSayHelloUsage() {
 	fmt.Fprintf(os.Stderr, `%[1]s [flags] msorderms say-hello -name STRING
 
-SayHello implements SayHello.
+SayHello implements sayHello.
     -name STRING: 
 
 Example:
-    %[1]s msorderms say-hello --name "Officia qui et et amet laudantium."
-`, os.Args[0])
-}
-
-func msordermsCreateOrderUsage() {
-	fmt.Fprintf(os.Stderr, `%[1]s [flags] msorderms create-order -body JSON
-
-CreateOrder implements CreateOrder.
-    -body JSON: 
-
-Example:
-    %[1]s msorderms create-order --body '{
-      "cognomeCliente": "Nostrum aspernatur dignissimos voluptatibus architecto id.",
-      "dataOrdine": "Et soluta rerum aut.",
-      "idOrdine": "Similique iusto harum illum voluptas eos.",
-      "nomeCliente": "Ut reiciendis quisquam.",
-      "righeOrdine": [
-         {
-            "barcode": "Sapiente aut ipsam adipisci voluptatum modi.",
-            "colore": "Repellendus et consectetur placeat alias tenetur maiores.",
-            "modello": "Facilis est consectetur enim expedita consectetur.",
-            "prezzo": 0.46302,
-            "quantita": 3961194039189103112,
-            "taglia": "Non sunt ea."
-         },
-         {
-            "barcode": "Sapiente aut ipsam adipisci voluptatum modi.",
-            "colore": "Repellendus et consectetur placeat alias tenetur maiores.",
-            "modello": "Facilis est consectetur enim expedita consectetur.",
-            "prezzo": 0.46302,
-            "quantita": 3961194039189103112,
-            "taglia": "Non sunt ea."
-         }
-      ],
-      "store": "Occaecati quis eum placeat.",
-      "tipologiaOrdine": "corriere"
-   }'
+    %[1]s msorderms say-hello --name "Et alias."
 `, os.Args[0])
 }
 
 func msordermsGetStatusOrderByIDUsage() {
 	fmt.Fprintf(os.Stderr, `%[1]s [flags] msorderms get-status-order-by-id -id-ordine STRING
 
-GetStatusOrderByID implements GetStatusOrderById.
+GetStatusOrderByID implements getStatusOrderById.
     -id-ordine STRING: IdOrdine
 
 Example:
-    %[1]s msorderms get-status-order-by-id --id-ordine "Repellendus quae excepturi labore asperiores dolorem ducimus."
+    %[1]s msorderms get-status-order-by-id --id-ordine "Adipisci cupiditate voluptates repellendus itaque ea."
+`, os.Args[0])
+}
+
+func msordermsCreateOrderUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] msorderms create-order -body JSON
+
+CreateOrder implements createOrder.
+    -body JSON: 
+
+Example:
+    %[1]s msorderms create-order --body '{
+      "cognomeCliente": "Facilis est consectetur enim expedita consectetur.",
+      "dataOrdine": "Aspernatur dignissimos voluptatibus architecto id.",
+      "idOrdine": "Et soluta rerum aut.",
+      "nomeCliente": "Sapiente aut ipsam adipisci voluptatum modi.",
+      "righeOrdine": [
+         {
+            "barcode": "Et consectetur.",
+            "colore": "Voluptatem non sunt ea.",
+            "modello": "Alias tenetur.",
+            "prezzo": 0.78429174,
+            "quantita": 7708216444412231043,
+            "taglia": "Nobis minima sit a qui."
+         },
+         {
+            "barcode": "Et consectetur.",
+            "colore": "Voluptatem non sunt ea.",
+            "modello": "Alias tenetur.",
+            "prezzo": 0.78429174,
+            "quantita": 7708216444412231043,
+            "taglia": "Nobis minima sit a qui."
+         }
+      ],
+      "store": "Sed ut reiciendis quisquam ipsa.",
+      "tipologiaOrdine": "negozio"
+   }'
 `, os.Args[0])
 }

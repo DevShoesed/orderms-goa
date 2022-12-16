@@ -2,7 +2,7 @@ package msorderms
 
 import (
 	"log"
-	"orderms/gen/swagger"
+	"orderms/internal/gateways/http/gen/swagger"
 )
 
 type swaggerSvc struct {

@@ -10,24 +10,19 @@ package msorderms
 
 import (
 	"context"
+	msordermsviews "orderms/internal/gateways/http/gen/msorderms/views"
 
 	goa "goa.design/goa/v3/pkg"
 )
 
 // The service manager order
 type Service interface {
-	// SayHello implements SayHello.
+	// SayHello implements sayHello.
 	SayHello(context.Context, *SayHelloPayload) (res string, err error)
-	// CreateOrder implements CreateOrder.
-	CreateOrder(context.Context, *OrdineRequest) (res *StatoOrdine, err error)
-	// GetStatusOrderByID implements GetStatusOrderById.
+	// GetStatusOrderByID implements getStatusOrderById.
 	GetStatusOrderByID(context.Context, *GetStatusOrderByIDPayload) (res *StatoOrdine, err error)
-	// SayHello implements SayHello.
-	SayHelloEndpoint(context.Context, *SayHelloPayload) (res string, err error)
-	// CreateOrder implements CreateOrder.
-	CreateOrderEndpoint(context.Context, *OrdineRequest) (res *StatoOrdine, err error)
-	// GetStatusOrderByID implements GetStatusOrderById.
-	GetStatusOrderByIDEndpoint(context.Context, *GetStatusOrderByIDPayload) (res *StatoOrdine, err error)
+	// CreateOrder implements createOrder.
+	CreateOrder(context.Context, *OrdineRequest) (res *StatoOrdine, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -38,16 +33,16 @@ const ServiceName = "msorderms"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [6]string{"SayHello", "CreateOrder", "GetStatusOrderById", "SayHello", "CreateOrder", "GetStatusOrderById"}
+var MethodNames = [3]string{"sayHello", "getStatusOrderById", "createOrder"}
 
 // GetStatusOrderByIDPayload is the payload type of the msorderms service
-// GetStatusOrderById method.
+// getStatusOrderById method.
 type GetStatusOrderByIDPayload struct {
 	// IdOrdine
 	IDOrdine string
 }
 
-// OrdineRequest is the payload type of the msorderms service CreateOrder
+// OrdineRequest is the payload type of the msorderms service createOrder
 // method.
 type OrdineRequest struct {
 	// Id Ordine
@@ -81,25 +76,74 @@ type RigaOrdine struct {
 	Prezzo *float32
 }
 
-// SayHelloPayload is the payload type of the msorderms service SayHello method.
+// SayHelloPayload is the payload type of the msorderms service sayHello method.
 type SayHelloPayload struct {
 	// Name
 	Name string
 }
 
-// StatoOrdine is the result type of the msorderms service CreateOrder method.
+// StatoOrdine is the result type of the msorderms service getStatusOrderById
+// method.
 type StatoOrdine struct {
 	// Id Ordine
 	OrdineID    *string
 	StatoOrdine *string
 }
 
-// MakeNoCriteria builds a goa.ServiceError from an error.
-func MakeNoCriteria(err error) *goa.ServiceError {
-	return goa.NewServiceError(err, "no_criteria", false, false, false)
+// Missing criteria
+type NoCriteria string
+
+// Error returns an error description.
+func (e NoCriteria) Error() string {
+	return "Missing criteria"
+}
+
+// ErrorName returns "no_criteria".
+//
+// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
+func (e NoCriteria) ErrorName() string {
+	return e.GoaErrorName()
+}
+
+// GoaErrorName returns "no_criteria".
+func (e NoCriteria) GoaErrorName() string {
+	return "no_criteria"
 }
 
 // MakeNoMatch builds a goa.ServiceError from an error.
 func MakeNoMatch(err error) *goa.ServiceError {
 	return goa.NewServiceError(err, "no_match", false, false, false)
+}
+
+// NewStatoOrdine initializes result type StatoOrdine from viewed result type
+// StatoOrdine.
+func NewStatoOrdine(vres *msordermsviews.StatoOrdine) *StatoOrdine {
+	return newStatoOrdine(vres.Projected)
+}
+
+// NewViewedStatoOrdine initializes viewed result type StatoOrdine from result
+// type StatoOrdine using the given view.
+func NewViewedStatoOrdine(res *StatoOrdine, view string) *msordermsviews.StatoOrdine {
+	p := newStatoOrdineView(res)
+	return &msordermsviews.StatoOrdine{Projected: p, View: "default"}
+}
+
+// newStatoOrdine converts projected type StatoOrdine to service type
+// StatoOrdine.
+func newStatoOrdine(vres *msordermsviews.StatoOrdineView) *StatoOrdine {
+	res := &StatoOrdine{
+		OrdineID:    vres.OrdineID,
+		StatoOrdine: vres.StatoOrdine,
+	}
+	return res
+}
+
+// newStatoOrdineView projects result type StatoOrdine to projected type
+// StatoOrdineView using the "default" view.
+func newStatoOrdineView(res *StatoOrdine) *msordermsviews.StatoOrdineView {
+	vres := &msordermsviews.StatoOrdineView{
+		OrdineID:    res.OrdineID,
+		StatoOrdine: res.StatoOrdine,
+	}
+	return vres
 }
